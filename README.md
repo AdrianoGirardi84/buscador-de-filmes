@@ -20,3 +20,4 @@ Este é um projeto de busca de filmes em tempo real que consome dados da API pú
 1. Clone o repositório:
    ```bash
    git clone [https://github.com/AdrianoGirardi84/buscador-de-filmes.git](https://github.com/AdrianoGirardi84/buscador-de-filmes.git)
+   
