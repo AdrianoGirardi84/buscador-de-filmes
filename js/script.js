@@ -95,7 +95,7 @@ inputFilme.addEventListener('keypress', function(e) {
 });
 
 // Vamos modificar um detalhe dentro da função buscarFilme que já temos:
-// No final da função buscarFilme (antes de fechar a última chave), adicione:
+// No final da função buscarFilme (antes de fechar a última chave), foi adicionado:
 // inputFilme.value = '';
 const modal = document.getElementById('modal-container');
 const fecharModal = document.getElementById('fechar-modal');
@@ -109,6 +109,9 @@ async function verDetalhes(id) {
 
  // função verDetalhes está montando o HTML com a classe info-texto
 detalhesFilme.innerHTML = `
+<button class="btn-favorito" onclick="salvarFavorito('${filme.imdbID}', '${filme.Title.replace(/'/g, "\\'")}', '${filme.Poster}')">
+    Adicionar aos Favoritos ❤️
+</button>
     <div class="detalhes-layout">
         <img src="${filme.Poster !== 'N/A' ? filme.Poster : 'https://via.placeholder.com/250x380?text=Sem+Poster'}" alt="${filme.Title}">
         <div class="info-texto">
@@ -134,3 +137,54 @@ fecharModal.addEventListener('click', () => {
 window.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('modal-hidden');
 });
+
+// Função para carregar favoritos do localStorage
+function carregarFavoritos() {
+    const favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
+    const listaFav = document.getElementById('lista-favoritos');
+    const secaoFav = document.getElementById('secao-favoritos');
+
+    if (favoritos.length > 0) {
+        secaoFav.classList.remove('modal-hidden');
+        listaFav.innerHTML = '';
+        
+        favoritos.forEach(filme => {
+            const card = document.createElement('div');
+            card.classList.add('movie-card');
+            card.innerHTML = `
+                <img src="${filme.Poster}" alt="${filme.Title}">
+                <h3>${filme.Title}</h3>
+                <button onclick="removerFavorito('${filme.imdbID}')" style="background:none; border:none; color:red; cursor:pointer;">Remover 🗑️</button>
+            `;
+            listaFav.appendChild(card);
+        });
+    } else {
+        secaoFav.classList.add('modal-hidden');
+    }
+}
+
+// Função para salvar um novo favorito
+function salvarFavorito(id, titulo, poster) {
+    let favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
+    
+    // Verifica se já existe para não duplicar
+    if (!favoritos.find(f => f.imdbID === id)) {
+        favoritos.push({ imdbID: id, Title: titulo, Poster: poster });
+        localStorage.setItem('meusFavoritos', JSON.stringify(favoritos));
+        alert('Filme adicionado aos favoritos!');
+        carregarFavoritos();
+    } else {
+        alert('Este filme já está nos favoritos!');
+    }
+}
+
+// Função para remover
+function removerFavorito(id) {
+    let favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
+    favoritos = favoritos.filter(f => f.imdbID !== id);
+    localStorage.setItem('meusFavoritos', JSON.stringify(favoritos));
+    carregarFavoritos();
+}
+
+// Chamar ao carregar a página
+carregarFavoritos();
