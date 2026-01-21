@@ -48,3 +48,13 @@ function exibirFilmes(filmes) {
 
 // Escutar o clique do botão
 botao.addEventListener('click', buscarFilme);
+// Fazer a busca ao apertar a tecla "Enter" no teclado
+inputFilme.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        buscarFilme();
+    }
+});
+
+// Vamos modificar um detalhe dentro da função buscarFilme que já temos:
+// No final da função buscarFilme (antes de fechar a última chave), adicione:
+// inputFilme.value = '';
