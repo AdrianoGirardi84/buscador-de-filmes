@@ -1,136 +1,165 @@
+/* 1. Reset básico e Fundo */
 body {
     background-color: #1a1a1a;
     color: white;
     font-family: Arial, sans-serif;
+    margin: 0;
     display: flex;
-    justify-content: center;
-    padding-top: 50px;
+    justify-content: center; /* Centraliza o conteúdo na tela */
+    min-height: 100vh;
 }
 
+/* 2. Container Principal (Onde a mágica acontece) */
 .container {
     width: 90%;
-    max-width: 800px;
-    text-align: center;
+    max-width: 1000px;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column; /* FORÇA Título, Busca e Filmes ficarem um EMBAIXO do outro */
+    align-items: center;    /* Centraliza os itens horizontalmente */
 }
 
-h1 { color: #e50914; }
+h1 { color: #e50914; margin-bottom: 30px; }
 
+/* 3. Barra de Busca */
 .busca {
-    margin-bottom: 30px;
     display: flex;
     gap: 10px;
-    justify-content: center;
+    width: 100%;
+    max-width: 500px; /* Impede que a barra de busca fique gigante */
+    margin-bottom: 50px;
 }
 
 input {
+    flex: 1;           /* Faz o campo de texto crescer o máximo possível */
     padding: 12px;
-    width: 60%;
     border-radius: 5px;
     border: none;
+    font-size: 16px;
+    height: 45px;      /* Altura fixa para não deformar como na foto */
+    box-sizing: border-box; 
 }
 
 button {
-    padding: 12px 25px;
     background-color: #e50914;
     color: white;
     border: none;
+    padding: 0 20px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    height: 45px;      /* Mesma altura do input */
 }
 
-button:hover { background-color: #b20710; }
-
-/* Ajuste no Grid para ficar sempre alinhado */
+/* 4. Grid de Filmes (Os resultados) */
 .grid-filmes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 25px;
-    padding: 20px 0;
+    width: 100%;
 }
 
-/* Efeito nos Cards */
 .movie-card {
     background-color: #262626;
     border-radius: 8px;
-    overflow: hidden; /* Garante que a imagem não saia do card */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    transition: transform 0.3s;
     cursor: pointer;
-    border: 1px solid transparent;
 }
 
-/* Efeito de Zoom e Brilho ao passar o mouse */
-.movie-card:hover {
-    transform: scale(1.08);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    border: 1px solid #e50914; /* Borda vermelha ao passar o mouse */
-}
+.movie-card:hover { transform: scale(1.05); }
 
 .movie-card img {
     width: 100%;
-    height: 300px; /* Altura fixa para padronizar todos os posters */
-    object-fit: cover; /* Ajusta a foto sem distorcer */
+    height: 300px;     /* Altura fixa para todos os posters ficarem iguais */
+    object-fit: cover; /* Não deforma a imagem */
 }
 
-.movie-card h3 {
-    font-size: 1rem;
-    padding: 10px 5px 0 5px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Corta o texto com "..." se for muito grande */
-}
+/* ============================================================
+   ESTILOS DO MODAL (JANELA DE DETALHES)
+   ============================================================ */
 
-.movie-card p {
-    color: #b3b3b3;
-    font-size: 0.9rem;
-    padding-bottom: 10px;
-}
-/* Container que cobre a tela toda */
+/* 1. Fundo escuro que cobre a tela toda */
 #modal-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* Fundo escurecido */
+    background-color: rgba(0, 0, 0, 0.9); /* Fundo preto transparente */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-/* Classe para esconder o modal */
-.modal-hidden { display: none !important; }
+/* 2. Classe para esconder o modal quando não estiver em uso */
+.modal-hidden {
+    display: none !important;
+}
 
-/* A caixa branca/escura no centro */
+/* 3. A caixa do modal (onde fica o conteúdo) */
 .modal-conteudo {
     background-color: #262626;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 600px;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 800px;
     width: 90%;
     position: relative;
     color: white;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
+/* 4. Botão de fechar (X) */
 #fechar-modal {
     position: absolute;
-    top: 10px;
+    top: 15px;
     right: 20px;
-    font-size: 30px;
+    font-size: 35px;
     cursor: pointer;
     color: #e50914;
+    transition: 0.3s;
 }
 
+#fechar-modal:hover {
+    transform: scale(1.2);
+}
+
+/* 5. Layout Lado a Lado (Imagem e Texto) */
 .detalhes-layout {
     display: flex;
-    gap: 20px;
+    gap: 30px; /* Espaço entre a imagem e o texto */
+    align-items: flex-start;
     margin-top: 20px;
 }
 
-.detalhes-layout img { width: 150px; border-radius: 5px; }
+/* 6. Ajuste da Imagem dentro do Modal (Resolve o erro da sua foto) */
+.detalhes-layout img {
+    width: 250px;         /* Largura fixa para o poster */
+    height: 380px;        /* Altura proporcional */
+    object-fit: cover;    /* Preenche o espaço sem deformar */
+    border-radius: 10px;
+    flex-shrink: 0;       /* Impede que a imagem seja "esmagada" pelo texto */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
 
-.movie-card {
-    cursor: pointer; /* Transforma a seta do mouse naquela 'mãozinha' de link */
+/* 7. Organização do Texto da Sinopse */
+.info-texto {
+    text-align: left;
+}
+
+.info-texto h2 {
+    margin-top: 0;
+    color: #e50914;
+    font-size: 2rem;
+}
+
+.info-texto p {
+    line-height: 1.6;
+    margin-bottom: 10px;
+    color: #ccc;
+}
+
+.info-texto strong {
+    color: white;
 }

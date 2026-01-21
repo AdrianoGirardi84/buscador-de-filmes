@@ -14,6 +14,40 @@ async function buscarFilme() {
         return;
     }
 
+    const loader = document.getElementById('loader'); // Adicione no topo com as outras variáveis
+
+async function buscarFilme() {
+    const nomeFilme = inputFilme.value;
+    
+    if (nomeFilme === '') {
+        alert('Por favor, digite o nome de um filme');
+        return;
+    }
+
+    // --- MÁGICA AQUI ---
+    loader.style.display = 'block'; // Mostra o carregamento
+    listaFilmes.innerHTML = '';    // Limpa a tela
+    // -------------------
+
+    const url = `https://www.omdbapi.com/?s=${nomeFilme}&apikey=${apiKey}`;
+    
+    try {
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+
+        loader.style.display = 'none'; // Esconde o carregamento ao terminar
+
+        if (dados.Response === 'True') {
+            exibirFilmes(dados.Search);
+        } else {
+            listaFilmes.innerHTML = '<p>Filme não encontrado! 😕</p>';
+        }
+    } catch (erro) {
+        loader.style.display = 'none';
+        alert('Erro ao buscar dados. Tente novamente.');
+    }
+}
+
     // O "fetch" é como o seu site fazendo uma ligação para a API
     const url = `https://www.omdbapi.com/?s=${nomeFilme}&apikey=${apiKey}`;
     
@@ -73,18 +107,19 @@ async function verDetalhes(id) {
     const resposta = await fetch(url);
     const filme = await resposta.json();
 
-    // Montando o conteúdo do Modal
-    detalhesFilme.innerHTML = `
-        <div class="detalhes-layout">
-            <img src="${filme.Poster}" alt="${filme.Title}">
-            <div>
-                <h2>${filme.Title}</h2>
-                <p><strong>Sinopse:</strong> ${filme.Plot}</p>
-                <p><strong>Diretor:</strong> ${filme.Director}</p>
-                <p><strong>Nota IMDB:</strong> ⭐ ${filme.imdbRating}</p>
-            </div>
+ // função verDetalhes está montando o HTML com a classe info-texto
+detalhesFilme.innerHTML = `
+    <div class="detalhes-layout">
+        <img src="${filme.Poster !== 'N/A' ? filme.Poster : 'https://via.placeholder.com/250x380?text=Sem+Poster'}" alt="${filme.Title}">
+        <div class="info-texto">
+            <h2>${filme.Title}</h2>
+            <p><strong>Sinopse:</strong> ${filme.Plot}</p>
+            <p><strong>Diretor:</strong> ${filme.Director}</p>
+            <p><strong>Nota IMDB:</strong> ⭐ ${filme.imdbRating}</p>
+            <p><strong>Ano:</strong> ${filme.Year}</p>
         </div>
-    `;
+    </div>
+`;
 
     // Mostra o modal
     modal.classList.remove('modal-hidden');
