@@ -1,57 +1,36 @@
-/* 1. Reset básico e Fundo */
 body {
-    background-color: #1a1a1a;
+    background-color: #141414;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
     display: flex;
-    justify-content: center; /* Centraliza o conteúdo na tela */
-    min-height: 100vh;
+    justify-content: center;
 }
 
-/* 2. Container Principal (Onde a mágica acontece) */
 .container {
     width: 90%;
-    max-width: 1000px;
-    padding-top: 50px;
+    max-width: 1100px;
     display: flex;
-    flex-direction: column; /* FORÇA Título, Busca e Filmes ficarem um EMBAIXO do outro */
-    align-items: center;    /* Centraliza os itens horizontalmente */
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0;
 }
 
-h1 { color: #e50914; margin-bottom: 30px; }
+h1 { color: #e50914; font-size: 2.5rem; margin-bottom: 30px; }
 
-/* 3. Barra de Busca */
 .busca {
     display: flex;
     gap: 10px;
     width: 100%;
-    max-width: 500px; /* Impede que a barra de busca fique gigante */
+    max-width: 650px;
+    height: 50px;
     margin-bottom: 50px;
 }
 
-input {
-    flex: 1;           /* Faz o campo de texto crescer o máximo possível */
-    padding: 12px;
-    border-radius: 5px;
-    border: none;
-    font-size: 16px;
-    height: 45px;      /* Altura fixa para não deformar como na foto */
-    box-sizing: border-box; 
-}
+.busca input { flex: 2; padding: 0 15px; border-radius: 4px; border: none; font-size: 16px; }
+.busca select { flex: 1; padding: 0 10px; border-radius: 4px; border: none; background: #333; color: white; cursor: pointer; }
+.busca button { flex: 0.8; background: #e50914; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-button {
-    background-color: #e50914;
-    color: white;
-    border: none;
-    padding: 0 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    height: 45px;      /* Mesma altura do input */
-}
-
-/* 4. Grid de Filmes (Os resultados) */
 .grid-filmes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -60,121 +39,41 @@ button {
 }
 
 .movie-card {
-    background-color: #262626;
+    background: #262626;
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.3s;
     cursor: pointer;
+    transition: transform 0.3s;
+    text-align: center;
 }
 
 .movie-card:hover { transform: scale(1.05); }
 
-.movie-card img {
-    width: 100%;
-    height: 300px;     /* Altura fixa para todos os posters ficarem iguais */
-    object-fit: cover; /* Não deforma a imagem */
-}
+.movie-card img { width: 100%; height: 300px; object-fit: cover; }
 
-/* ============================================================
-   ESTILOS DO MODAL (JANELA DE DETALHES)
-   ============================================================ */
+.movie-card h3 { font-size: 1rem; padding: 10px; margin: 0; }
 
-/* 1. Fundo escuro que cobre a tela toda */
+/* Modal */
 #modal-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Fundo preto transparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000;
 }
 
-/* 2. Classe para esconder o modal quando não estiver em uso */
-.modal-hidden {
-    display: none !important;
-}
+.modal-hidden { display: none !important; }
 
-/* 3. A caixa do modal (onde fica o conteúdo) */
 .modal-conteudo {
-    background-color: #262626;
-    padding: 30px;
-    border-radius: 15px;
-    max-width: 800px;
-    width: 90%;
-    position: relative;
-    color: white;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    background: #181818; padding: 30px; border-radius: 10px; max-width: 800px; width: 90%; position: relative;
 }
 
-/* 4. Botão de fechar (X) */
-#fechar-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 35px;
-    cursor: pointer;
-    color: #e50914;
-    transition: 0.3s;
-}
+#fechar-modal { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; color: #e50914; }
 
-#fechar-modal:hover {
-    transform: scale(1.2);
-}
+.detalhes-layout { display: flex; gap: 20px; }
+.detalhes-layout img { width: 250px; border-radius: 8px; }
+.info-texto { text-align: left; }
 
-/* 5. Layout Lado a Lado (Imagem e Texto) */
-.detalhes-layout {
-    display: flex;
-    gap: 30px; /* Espaço entre a imagem e o texto */
-    align-items: flex-start;
-    margin-top: 20px;
-}
+.btn-favorito { background: #e50914; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px; font-weight: bold; }
 
-/* 6. Ajuste da Imagem dentro do Modal (Resolve o erro da sua foto) */
-.detalhes-layout img {
-    width: 250px;         /* Largura fixa para o poster */
-    height: 380px;        /* Altura proporcional */
-    object-fit: cover;    /* Preenche o espaço sem deformar */
-    border-radius: 10px;
-    flex-shrink: 0;       /* Impede que a imagem seja "esmagada" pelo texto */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+#loader {
+    display: none; width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #e50914; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
 }
-
-/* 7. Organização do Texto da Sinopse */
-.info-texto {
-    text-align: left;
-}
-
-.info-texto h2 {
-    margin-top: 0;
-    color: #e50914;
-    font-size: 2rem;
-}
-
-.info-texto p {
-    line-height: 1.6;
-    margin-bottom: 10px;
-    color: #ccc;
-}
-
-.info-texto strong {
-    color: white;
-}
-.btn-favorito {
-    background-color: transparent;
-    border: 2px solid #e50914;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 15px;
-    transition: 0.3s;
-}
-
-.btn-favorito:hover {
-    background-color: #e50914;
-}
+@keyframes spin { to { transform: rotate(360deg); } }

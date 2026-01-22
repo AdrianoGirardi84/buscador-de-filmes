@@ -3,35 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador de Filmes 🎬</title>
+    <title>Buscador de Filmes Pro</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="container">
+        <h1>🎬 Buscador de Filmes</h1>
 
-<div class="container">
-    <h1>Buscador de Filmes</h1>
-    
-    <div class="busca">
-        <input type="text" id="input-filme" placeholder="Digite o nome de um filme...">
-        <button id="btn-buscar">Buscar</button>
-    </div> <div id="loader"></div>
+        <div class="busca">
+            <input type="text" id="input-filme" placeholder="Digite o nome de um filme...">
+            <select id="filtro-tipo">
+                <option value="">Todos</option>
+                <option value="movie">Filmes</option>
+                <option value="series">Séries</option>
+            </select>
+            <button id="btn-buscar">Buscar</button>
+        </div>
 
-    <section id="secao-favoritos" class="modal-hidden">
-    <h2 style="color: #e50914;">Meus Favoritos ❤️</h2>
-    <div id="lista-favoritos" class="grid-filmes"></div>
-    <hr style="border: 0.5px solid #333; margin: 40px 0;">
-</section>
+        <div id="loader"></div>
 
-    <div id="lista-filmes" class="grid-filmes"></div>
-</div>
+        <section id="secao-favoritos" class="modal-hidden">
+            <h2 class="titulo-secao">Meus Favoritos ❤️</h2>
+            <div id="lista-favoritos" class="grid-filmes"></div>
+            <hr>
+        </section>
+
+        <div id="lista-filmes" class="grid-filmes"></div>
+    </div>
 
     <div id="modal-container" class="modal-hidden">
-    <div class="modal-conteudo">
-        <span id="fechar-modal">&times;</span>
-        <div id="detalhes-filme">
-            </div>
+        <div class="modal-conteudo">
+            <span id="fechar-modal">&times;</span>
+            <div id="detalhes-filme"></div>
+        </div>
     </div>
-</div>
 
     <script src="js/script.js"></script>
 </body>

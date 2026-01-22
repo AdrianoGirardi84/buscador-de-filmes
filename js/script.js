@@ -1,144 +1,79 @@
-const apiKey = 'b8747b52'; 
+const apiKey = 'b8747b52';
 
-const botao = document.getElementById('btn-buscar');
-const listaFilmes = document.getElementById('lista-filmes');
+const btnBuscar = document.getElementById('btn-buscar');
 const inputFilme = document.getElementById('input-filme');
-
-// Função que busca o filme na API
-async function buscarFilme() {
-    const nomeFilme = inputFilme.value;
-    
-    // Se o campo estiver vazio, não faz nada
-    if (nomeFilme === '') {
-        alert('Por favor, digite o nome de um filme');
-        return;
-    }
-
-    const loader = document.getElementById('loader'); // Adicione no topo com as outras variáveis
+const filtroTipo = document.getElementById('filtro-tipo');
+const listaFilmes = document.getElementById('lista-filmes');
+const loader = document.getElementById('loader');
+const modal = document.getElementById('modal-container');
+const detalhesFilme = document.getElementById('detalhes-filme');
+const fecharModal = document.getElementById('fechar-modal');
 
 async function buscarFilme() {
-    const nomeFilme = inputFilme.value;
-    
-    if (nomeFilme === '') {
-        alert('Por favor, digite o nome de um filme');
-        return;
-    }
+    const termo = inputFilme.value;
+    const tipo = filtroTipo.value;
+    if (!termo) return alert("Digite um nome!");
 
-    // --- MÁGICA AQUI ---
-    loader.style.display = 'block'; // Mostra o carregamento
-    listaFilmes.innerHTML = '';    // Limpa a tela
-    // -------------------
+    loader.style.display = 'block';
+    listaFilmes.innerHTML = '';
 
-    const url = `https://www.omdbapi.com/?s=${nomeFilme}&apikey=${apiKey}`;
-    
     try {
-        const resposta = await fetch(url);
-        const dados = await resposta.json();
-
-        loader.style.display = 'none'; // Esconde o carregamento ao terminar
-
-        if (dados.Response === 'True') {
-            exibirFilmes(dados.Search);
-        } else {
-            listaFilmes.innerHTML = '<p>Filme não encontrado! 😕</p>';
-        }
-    } catch (erro) {
+        const url = `https://www.omdbapi.com/?s=${termo}&type=${tipo}&apikey=${apiKey}`;
+        const res = await fetch(url);
+        const data = await res.json();
         loader.style.display = 'none';
-        alert('Erro ao buscar dados. Tente novamente.');
-    }
+
+        if (data.Response === "True") {
+            exibirFilmes(data.Search, listaFilmes);
+        } else {
+            listaFilmes.innerHTML = `<p>Filme não encontrado. 😕</p>`;
+        }
+    } catch (e) { console.error(e); loader.style.display = 'none'; }
 }
 
-    // O "fetch" é como o seu site fazendo uma ligação para a API
-    const url = `https://www.omdbapi.com/?s=${nomeFilme}&apikey=${apiKey}`;
-    
-    const resposta = await fetch(url);
-    const dados = await resposta.json();
-
-    if (dados.Response === 'True') {
-        exibirFilmes(dados.Search);
-    } else {
-        listaFilmes.innerHTML = '<p>Filme não encontrado! 😕</p>';
-    }
-}
-
-function exibirFilmes(filmes) {
-    listaFilmes.innerHTML = ''; 
-
+function exibirFilmes(filmes, container) {
+    container.innerHTML = '';
     filmes.forEach(filme => {
         const card = document.createElement('div');
         card.classList.add('movie-card');
-
-        // Note que usamos a crase ` para envolver tudo
-        // E usamos onclick="verDetalhes('${filme.imdbID}')" com aspas simples dentro das duplas
         card.innerHTML = `
-            <img src="${filme.Poster !== 'N/A' ? filme.Poster : 'https://via.placeholder.com/300x450?text=Sem+Foto'}" alt="${filme.Title}">
+            <img src="${filme.Poster !== 'N/A' ? filme.Poster : 'https://via.placeholder.com/300x450'}" alt="${filme.Title}">
             <h3>${filme.Title}</h3>
-            <p>Ano: ${filme.Year}</p>
+            <p>${filme.Year}</p>
         `;
-
-        // Em vez de colocar o onclick no HTML, vamos adicionar via JavaScript que é mais seguro:
-        card.addEventListener('click', () => {
-            verDetalhes(filme.imdbID);
-        });
-
-        listaFilmes.appendChild(card);
+        card.onclick = () => verDetalhes(filme.imdbID);
+        container.appendChild(card);
     });
 }
 
-// Escutar o clique do botão
-botao.addEventListener('click', buscarFilme);
-// Fazer a busca ao apertar a tecla "Enter" no teclado
-inputFilme.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        buscarFilme();
-    }
-});
-
-// Vamos modificar um detalhe dentro da função buscarFilme que já temos:
-// No final da função buscarFilme (antes de fechar a última chave), foi adicionado:
-// inputFilme.value = '';
-const modal = document.getElementById('modal-container');
-const fecharModal = document.getElementById('fechar-modal');
-const detalhesFilme = document.getElementById('detalhes-filme');
-
-// Função para buscar detalhes específicos de UM filme
 async function verDetalhes(id) {
-    const url = `https://www.omdbapi.com/?i=${id}&apikey=${apiKey}`;
-    const resposta = await fetch(url);
-    const filme = await resposta.json();
+    const url = `https://www.omdbapi.com/?i=${id}&plot=full&apikey=${apiKey}`;
+    const res = await fetch(url);
+    const filme = await res.json();
 
- // função verDetalhes está montando o HTML com a classe info-texto
-detalhesFilme.innerHTML = `
-<button class="btn-favorito" onclick="salvarFavorito('${filme.imdbID}', '${filme.Title.replace(/'/g, "\\'")}', '${filme.Poster}')">
-    Adicionar aos Favoritos ❤️
-</button>
-    <div class="detalhes-layout">
-        <img src="${filme.Poster !== 'N/A' ? filme.Poster : 'https://via.placeholder.com/250x380?text=Sem+Poster'}" alt="${filme.Title}">
-        <div class="info-texto">
-            <h2>${filme.Title}</h2>
-            <p><strong>Sinopse:</strong> ${filme.Plot}</p>
-            <p><strong>Diretor:</strong> ${filme.Director}</p>
-            <p><strong>Nota IMDB:</strong> ⭐ ${filme.imdbRating}</p>
-            <p><strong>Ano:</strong> ${filme.Year}</p>
+    detalhesFilme.innerHTML = `
+        <div class="detalhes-layout">
+            <img src="${filme.Poster}" alt="${filme.Title}">
+            <div class="info-texto">
+                <h2>${filme.Title}</h2>
+                <p><strong>Sinopse:</strong> ${filme.Plot}</p>
+                <p><strong>Nota:</strong> ⭐ ${filme.imdbRating}</p>
+                <button class="btn-favorito" onclick="salvarFavorito('${filme.imdbID}', '${filme.Title.replace(/'/g, "\\'")}', '${filme.Poster}')">Favoritar ❤️</button>
+            </div>
         </div>
-    </div>
-`;
-
-    // Mostra o modal
+    `;
     modal.classList.remove('modal-hidden');
 }
 
-// Fechar o modal ao clicar no X
-fecharModal.addEventListener('click', () => {
-    modal.classList.add('modal-hidden');
-});
+function salvarFavorito(id, titulo, poster) {
+    let favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
+    if (!favoritos.find(f => f.imdbID === id)) {
+        favoritos.push({ imdbID: id, Title: titulo, Poster: poster });
+        localStorage.setItem('meusFavoritos', JSON.stringify(favoritos));
+        carregarFavoritos();
+    }
+}
 
-// Fechar o modal se clicar fora da caixa
-window.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.add('modal-hidden');
-});
-
-// Função para carregar favoritos do localStorage
 function carregarFavoritos() {
     const favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
     const listaFav = document.getElementById('lista-favoritos');
@@ -147,44 +82,29 @@ function carregarFavoritos() {
     if (favoritos.length > 0) {
         secaoFav.classList.remove('modal-hidden');
         listaFav.innerHTML = '';
-        
-        favoritos.forEach(filme => {
+        favoritos.forEach(f => {
             const card = document.createElement('div');
             card.classList.add('movie-card');
             card.innerHTML = `
-                <img src="${filme.Poster}" alt="${filme.Title}">
-                <h3>${filme.Title}</h3>
-                <button onclick="removerFavorito('${filme.imdbID}')" style="background:none; border:none; color:red; cursor:pointer;">Remover 🗑️</button>
+                <img src="${f.Poster}">
+                <h3>${f.Title}</h3>
+                <button onclick="removerFavorito(event, '${f.imdbID}')" style="color:red; background:none; border:none; cursor:pointer; padding:10px;">Remover 🗑️</button>
             `;
+            card.onclick = () => verDetalhes(f.imdbID);
             listaFav.appendChild(card);
         });
-    } else {
-        secaoFav.classList.add('modal-hidden');
-    }
+    } else { secaoFav.classList.add('modal-hidden'); }
 }
 
-// Função para salvar um novo favorito
-function salvarFavorito(id, titulo, poster) {
-    let favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
-    
-    // Verifica se já existe para não duplicar
-    if (!favoritos.find(f => f.imdbID === id)) {
-        favoritos.push({ imdbID: id, Title: titulo, Poster: poster });
-        localStorage.setItem('meusFavoritos', JSON.stringify(favoritos));
-        alert('Filme adicionado aos favoritos!');
-        carregarFavoritos();
-    } else {
-        alert('Este filme já está nos favoritos!');
-    }
-}
-
-// Função para remover
-function removerFavorito(id) {
+function removerFavorito(event, id) {
+    event.stopPropagation();
     let favoritos = JSON.parse(localStorage.getItem('meusFavoritos')) || [];
     favoritos = favoritos.filter(f => f.imdbID !== id);
     localStorage.setItem('meusFavoritos', JSON.stringify(favoritos));
     carregarFavoritos();
 }
 
-// Chamar ao carregar a página
-carregarFavoritos();
+btnBuscar.onclick = buscarFilme;
+fecharModal.onclick = () => modal.classList.add('modal-hidden');
+window.onclick = (e) => { if (e.target == modal) modal.classList.add('modal-hidden'); };
+window.onload = carregarFavoritos;
